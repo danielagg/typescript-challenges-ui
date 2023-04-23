@@ -1,6 +1,6 @@
 import { Octokit } from "octokit";
 import { Challenges } from "./challenges";
-import { Challenge, Level } from "./types";
+import { GitHubChallenge, Level } from "./types";
 import Image from "next/image";
 
 export default async function Home() {
@@ -16,11 +16,11 @@ export default async function Home() {
 
   const result: { name: string }[] = dirContentsMetadata?.data as any;
 
-  const parseResult = (arr: string[]): Challenge[] => {
+  const parseResult = (arr: string[]): GitHubChallenge[] => {
     const parsed = arr.map((a) => {
       const [aNum, aWord, ...aRest] = a.split("-");
       const aNumInt = parseInt(aNum);
-      const res: Challenge = {
+      const res: GitHubChallenge = {
         name: aRest.join("-"),
         number: aNumInt,
         level: Level[aWord as keyof typeof Level],
@@ -30,7 +30,7 @@ export default async function Home() {
       return res;
     });
 
-    parsed.sort((a: Challenge, b: Challenge) => {
+    parsed.sort((a: GitHubChallenge, b: GitHubChallenge) => {
       if (a.level < b.level) return -1;
       if (a.level > b.level) return 1;
 

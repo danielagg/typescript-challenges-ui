@@ -1,8 +1,15 @@
-export type Challenge = {
+export type GitHubChallenge = {
   name: string;
   number: number;
   level: Level;
   originalName: string;
+};
+
+export type LocalChallenge = {
+  name: string;
+  number: number;
+  level: Level;
+  isCompleted: boolean;
 };
 
 export enum Level {

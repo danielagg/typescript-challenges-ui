@@ -1,42 +1,83 @@
 "use client";
 
-import { Octokit } from "octokit";
-import { Challenge as ChallengeData } from "./types";
 import { useState } from "react";
+import { LocalChallenge } from "./types";
+import { UndoButton } from "./undoButton";
+import { CompleteButton } from "./completeButton";
 
-export const Challenge = ({ data }: { data: ChallengeData }) => {
-const [isCompleted, setIsCompleted] = useState(false)
+export const Challenge = ({ data }: { data: LocalChallenge }) => {
+  const [isCompleted, setIsCompleted] = useState(data.isCompleted);
 
+  const getBackground = () => {
+    if (isCompleted) {
+      return "bg-sky-800";
+    } else {
+      return "bg-black";
+    }
+  };
+
+  const onIsCompleted = () => {
+    const completions = localStorage.getItem("completions");
+    setIsCompleted(true);
+
+    if (!completions) {
+      localStorage.setItem("completions", JSON.stringify([data.number]));
+      return;
+    }
+
+    const parsedCompletions = parseCompletions(completions);
+
+    parsedCompletions.add(data.number);
+
+    setLocalStorage(parsedCompletions);
+  };
+
+  const onUndo = () => {
+    setIsCompleted(false);
+
+    const parsedCompletions = parseCompletions(
+      localStorage.getItem("completions")!
+    );
+
+    parsedCompletions.delete(data.number);
+
+    setLocalStorage(parsedCompletions);
+  };
+
+  const parseCompletions = (completions: string): Set<number> => {
+    return new Set(
+      JSON.parse(completions, (_, value) => {
+        if (!Array.isArray(value)) {
+          value = [value];
+        }
+        return value.map(Number);
+      }).flat()
+    );
+  };
+
+  const setLocalStorage = (data: Set<number>) => {
+    localStorage.setItem("completions", JSON.stringify(Array.from(data)));
+  };
 
   return (
-    <div className="border-2 border-neutral-700 bg-neutral-900 p-2 rounded w-full flex items-center justify-between">
+    <div
+      className={`border border-neutral-700 p-2 rounded w-full flex items-center justify-between ${getBackground()}`}
+    >
       <a
         href={`https://tsch.js.org/${data.number}/play`}
         target="_blank"
-        className="cursor-pointer hover:underline pl-4"
+        className={`cursor-pointer hover:underline pl-4 ${
+          isCompleted ? "opacity-50" : "opacity-100"
+        }`}
       >
         {data.number.toString().padStart(5, "0")}.{" "}
         {data.name.charAt(0).toUpperCase() + data.name.slice(1)}
       </a>
-      <div className="bg-neutral-400 text-black py-2 px-6 rounded flex items-center space-x-2 hover:bg-neutral-300 cursor-pointer font-medium"
-      onClick={() => setIsCompleted(!isCompleted)}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className="w-5 h-5"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-
-        <div>Completed</div>
-      </div>
+      {isCompleted ? (
+        <UndoButton onClick={onUndo} />
+      ) : (
+        <CompleteButton onClick={onIsCompleted} />
+      )}
     </div>
   );
 };
