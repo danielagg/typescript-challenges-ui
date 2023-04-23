@@ -3,24 +3,64 @@
 import { Challenge, Level } from "./types";
 
 export const Challenges = ({ data }: { data: Challenge[] }) => {
-  const easyChallenges = data.filter((d) => d.level == Level.easy);
+  return (
+    <div className="w-full flex flex-col items-start space-y-6 mt-12">
+      <ChallengePerLevel level={Level.easy} data={data} />
+      <ChallengePerLevel level={Level.medium} data={data} />
+      <ChallengePerLevel level={Level.hard} data={data} />
+      <ChallengePerLevel level={Level.extreme} data={data} />
+    </div>
+  );
+};
+
+const ChallengePerLevel = ({
+  level,
+  data,
+}: {
+  level: Level;
+  data: Challenge[];
+}) => {
+  const challengesInCurrentLevel = data.filter((d) => d.level == level);
+
+  const getReadableCurrentLevel = () => {
+    switch (level) {
+      case Level.easy:
+        return "Easy";
+      case Level.medium:
+        return "Medium";
+      case Level.hard:
+        return "Hard";
+      case Level.extreme:
+        return "Extreme";
+    }
+  };
+
+  const getBorderColorForCurrentLevel = () => {
+    switch (level) {
+      case Level.easy:
+        return "border-green-700";
+      case Level.medium:
+        return "border-yellow-700";
+      case Level.hard:
+        return "border-orange-900";
+      case Level.extreme:
+        return "border-red-800";
+    }
+  };
 
   return (
-    <div className="w-full flex items-start space-y-4">
-      <div className="w-6 h-12 bg-green-700" />
-      <div>
-        <div className="text-2xl font-bold">Easy</div>
-        <div className="w-full">
-          {easyChallenges.map((d) => (
-            <div key={d.number}>{d.name}</div>
-          ))}
-        </div>
+    <div
+      className={`p-10 border-l-[32px] border-t-2 w-full rounded-tl ${getBorderColorForCurrentLevel()}`}
+    >
+      <div className="text-3xl font-bold">{getReadableCurrentLevel()}</div>
+      <div className="w-full space-y-2 mt-4">
+        {challengesInCurrentLevel.map((d) => (
+          <div key={d.number}>
+            {d.number.toString().padStart(4, "0")}.{" "}
+            {d.name.charAt(0).toUpperCase() + d.name.slice(1)}
+          </div>
+        ))}
       </div>
-
-      {/* <div className="rounded border-2 border-green-800">
-        <div className="text-2xl font-bold text-green-300">Easy</div>
-       
-      </div> */}
     </div>
   );
 };
