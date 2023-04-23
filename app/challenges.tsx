@@ -1,8 +1,7 @@
-"use client";
+import { Challenge } from "./challenge";
+import { Challenge as ChallengeData, Level } from "./types";
 
-import { Challenge, Level } from "./types";
-
-export const Challenges = ({ data }: { data: Challenge[] }) => {
+export const Challenges = ({ data }: { data: ChallengeData[] }) => {
   return (
     <div className="w-full flex flex-col items-start space-y-6 mt-12">
       <ChallengePerLevel level={Level.easy} data={data} />
@@ -18,7 +17,7 @@ const ChallengePerLevel = ({
   data,
 }: {
   level: Level;
-  data: Challenge[];
+  data: ChallengeData[];
 }) => {
   const challengesInCurrentLevel = data.filter((d) => d.level == level);
 
@@ -55,10 +54,7 @@ const ChallengePerLevel = ({
       <div className="text-3xl font-bold">{getReadableCurrentLevel()}</div>
       <div className="w-full space-y-2 mt-4">
         {challengesInCurrentLevel.map((d) => (
-          <div key={d.number}>
-            {d.number.toString().padStart(4, "0")}.{" "}
-            {d.name.charAt(0).toUpperCase() + d.name.slice(1)}
-          </div>
+          <Challenge key={d.number} data={d} />
         ))}
       </div>
     </div>

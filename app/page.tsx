@@ -24,6 +24,7 @@ export default async function Home() {
         name: aRest.join("-"),
         number: aNumInt,
         level: Level[aWord as keyof typeof Level],
+        originalName: a,
       };
 
       return res;

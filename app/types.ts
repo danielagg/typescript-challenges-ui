@@ -2,6 +2,7 @@ export type Challenge = {
   name: string;
   number: number;
   level: Level;
+  originalName: string;
 };
 
 export enum Level {
